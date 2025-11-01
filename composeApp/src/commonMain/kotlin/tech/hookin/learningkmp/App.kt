@@ -94,9 +94,5 @@ fun App() {
 
 fun generateUuid(): String {
     val chars = "0123456789abcdef"
-    return (1..8).map { chars.random() }.joinToString("") + "-" +
-            (1..4).map { chars.random() }.joinToString("") + "-" +
-            (1..4).map { chars.random() }.joinToString("") + "-" +
-            (1..4).map { chars.random() }.joinToString("") + "-" +
-            (1..12).map { chars.random() }.joinToString("")
+    return (1..8).map { chars.random() }.joinToString("")
 }
