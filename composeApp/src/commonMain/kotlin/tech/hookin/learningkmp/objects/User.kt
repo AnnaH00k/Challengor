@@ -1,7 +1,7 @@
 package tech.hookin.learningkmp.objects
 
 data class User(
-    val id: String,
+    val id: Int,
     val name: String,
     val password: String,
     val email: String,

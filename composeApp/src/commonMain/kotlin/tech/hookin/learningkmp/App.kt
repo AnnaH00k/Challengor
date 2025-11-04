@@ -1,17 +1,15 @@
 package tech.hookin.learningkmp
 
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import tech.hookin.learningkmp.components.AutoIncrementIdGenerator
 import tech.hookin.learningkmp.objects.User
 import tech.hookin.learningkmp.pages.Login
 import tech.hookin.learningkmp.pages.Register
 import tech.hookin.learningkmp.pages.Dashboard
-
-
 
 enum class Screen {
     HOME,
@@ -64,7 +62,7 @@ fun App() {
                 },
                 onRegisterSubmit = { name, email, password ->
                     val newUser = User(
-                        id = generateUuid(),
+                        id = AutoIncrementIdGenerator(registeredUsers){ user -> user.id },
                         name = name,
                         email = email,
                         password = password,
@@ -90,9 +88,4 @@ fun App() {
 
     }
 
-}
-
-fun generateUuid(): String {
-    val chars = "0123456789abcdef"
-    return (1..8).map { chars.random() }.joinToString("")
 }
