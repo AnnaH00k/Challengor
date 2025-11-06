@@ -5,11 +5,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import tech.hookin.learningkmp.components.AutoIncrementIdGenerator
 import tech.hookin.learningkmp.objects.User
 import tech.hookin.learningkmp.pages.Login
 import tech.hookin.learningkmp.pages.Register
 import tech.hookin.learningkmp.pages.Dashboard
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 enum class Screen {
     HOME,
@@ -18,12 +22,14 @@ enum class Screen {
     DASHBOARD
 }
 
+@OptIn(ExperimentalTime::class)
 @Composable
 fun App() {
     var currentScreen by remember { mutableStateOf(Screen.HOME) }
     var currentUser by remember { mutableStateOf<User?>(null) }
     var registeredUsers by remember { mutableStateOf<List<User>>(emptyList()) }
-
+    val now = Clock.System.now()
+    val localDateTime = now.toLocalDateTime(TimeZone.currentSystemDefault())
 
     when (currentScreen) {
         Screen.HOME -> {
@@ -66,6 +72,7 @@ fun App() {
                         name = name,
                         email = email,
                         password = password,
+                        registeredOn = localDateTime.toString(),
                         createdChallenges = emptyList()
                     )
                     registeredUsers = registeredUsers + newUser
@@ -83,7 +90,7 @@ fun App() {
         Screen.DASHBOARD -> {
             currentUser?.let { user ->
                 Dashboard(
-                    BackClick = { currentScreen = Screen.HOME },
+                    backClick = { currentScreen = Screen.HOME },
                     currentUser = user,
                     registeredUsers = registeredUsers
                 )

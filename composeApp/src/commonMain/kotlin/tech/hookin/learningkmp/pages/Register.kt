@@ -31,7 +31,6 @@ import tech.hookin.learningkmp.objects.User
 import tech.hookin.learningkmp.ui.components.EmailInput
 
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun Register(
     BackClick: () -> Unit,

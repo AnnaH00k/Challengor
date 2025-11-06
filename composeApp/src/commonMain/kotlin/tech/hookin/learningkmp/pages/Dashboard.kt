@@ -1,104 +1,95 @@
 package tech.hookin.learningkmp.pages
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import tech.hookin.learningkmp.objects.User
-import tech.hookin.learningkmp.ui.components.CenteredRow
 import tech.hookin.learningkmp.ui.components.H2
 import tech.hookin.learningkmp.ui.components.HexToColor
 import tech.hookin.learningkmp.ui.components.MainButton
 import tech.hookin.learningkmp.ui.components.MainPage
+import kotlin.time.ExperimentalTime
 
-val borderColor = HexToColor("#435A4D")
+private val borderColor = HexToColor("#435A4D")
 private val borderWidth = 1.dp
 
 @Composable
 private fun TableCell(
-    text: String,
-    modifier: Modifier = Modifier,
-    weight: Float = 1f,
-    borderRight: Boolean = true
+    value: String,
+    modifier: Modifier = Modifier
 ) {
-    CenteredRow(modifier = Modifier .fillMaxWidth() .border(width = borderWidth, color = borderColor)) {
+    Box(
+        modifier = modifier
+            .border(borderWidth, borderColor)
+            .padding(8.dp)
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = 40.dp),
+    contentAlignment = Alignment.Center,) {
         Text(
-            text = text,
-            modifier = modifier
-                .padding(8.dp)
-                .fillMaxWidth(),
-            textAlign = TextAlign.Center
-            )
+            text = value,
+            textAlign = TextAlign.Center,
+            maxLines = 1,
+        )
     }
-
 }
 
 @Composable
-fun VerticalTable(
-    registeredUsers: List<User>
+private fun UserTableColumn(
+    header: String,
+    values: List<String>,
+    modifier: Modifier = Modifier
 ) {
-    Row(
+    Column(
+        modifier = modifier
+            .border(borderWidth, borderColor)
+            .width(IntrinsicSize.Max),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        TableCell(header)
+        values.forEach { TableCell(it) }
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+@Composable
+fun VerticalTable(registeredUsers: List<User>) {
+    val scrollState = rememberScrollState()
+
+    val idValues = registeredUsers.map { it.id.toString() }
+    val nameValues = registeredUsers.map { it.name }
+    val emailValues = registeredUsers.map { it.email }
+    val passwordValues = registeredUsers.map { it.password }
+    val registeredOnValues = registeredUsers.map { it.registeredOn.toString() }
+
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .border(width = borderWidth, color = borderColor),
+            .horizontalScroll(scrollState),
+        contentAlignment = Alignment.Center
     ) {
-        Column(
-            modifier = Modifier
-                .weight(2f)
-                .border(width = borderWidth, color = borderColor),
-            horizontalAlignment = Alignment.CenterHorizontally
+        Row(
+            modifier = Modifier.border(borderWidth, borderColor).wrapContentWidth()
         ) {
-            TableCell("ID", weight = 1f)
-            registeredUsers.forEach { user ->
-                TableCell(user.id.toString(), weight = 1f)
-            }
-        }
-
-        Column(
-            modifier = Modifier
-                .weight(2f)
-                .border(width = borderWidth, color = borderColor),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TableCell("Name", weight = 1f)
-            registeredUsers.forEach { user ->
-                TableCell(user.name, weight = 1f)
-            }
-        }
-
-        Column(
-            modifier = Modifier
-                .weight(3f)
-                .border(width = borderWidth, color = borderColor),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TableCell("Email", weight = 1f)
-            registeredUsers.forEach { user ->
-                TableCell(user.email, weight = 1f)
-            }
-        }
-
-        Column(
-            modifier = Modifier
-                .weight(3f)
-                .border(width = borderWidth, color = borderColor),
-        horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TableCell("Password", weight = 1f)
-            registeredUsers.forEach { user ->
-                TableCell(user.password, weight = 1f)
-            }
+            UserTableColumn("ID", idValues)
+            UserTableColumn("Name", nameValues)
+            UserTableColumn("Email", emailValues)
+            UserTableColumn("Password", passwordValues)
+            UserTableColumn("Registered on", registeredOnValues)
         }
     }
 }
 
 @Composable
 fun Dashboard(
-    BackClick: () -> Unit,
+    backClick: () -> Unit,
     currentUser: User,
     registeredUsers: List<User>
 ) {
@@ -118,26 +109,25 @@ fun Dashboard(
             ) {
                 MainButton(
                     text = "Back",
-                    onClick = BackClick,
+                    onClick = backClick,
                 )
             }
 
-
             Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier
                     .fillMaxWidth()
                     .widthIn(max = 800.dp)
                     .padding(horizontal = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
                 H2("Welcome ${currentUser.name}")
 
                 Text(
                     " ${currentUser.email}",
                     modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    maxLines = 1
                 )
                 Text(
                     "ID: ${currentUser.id}",
@@ -146,8 +136,7 @@ fun Dashboard(
                 )
 
                 H2("All Registered Users")
-
-                VerticalTable(registeredUsers = registeredUsers)
+                VerticalTable(registeredUsers)
             }
         }
     }
