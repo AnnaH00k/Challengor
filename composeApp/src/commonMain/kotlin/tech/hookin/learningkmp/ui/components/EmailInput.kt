@@ -30,6 +30,9 @@ fun EmailInput(
     val forbiddenChars = "<>{}()[];:'\"\\/"
 
     fun validateEmail(input: String): String? {
+        if (input.any{ it.isWhitespace() }) {
+            return "Email cannot contain whitespace"
+        }
         if (input.any { it in forbiddenChars }) {
             return "Email contains invalid characters"
         }

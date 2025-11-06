@@ -29,6 +29,9 @@ fun PasswordInput(
 
 
     fun validatePassword(input: String): String? {
+        if (input.any { it.isWhitespace() }) {
+            return "Password cannot contain whitespace"
+        }
         if (input.length < 6) {
             return "Password must be at least 6 characters"
         }

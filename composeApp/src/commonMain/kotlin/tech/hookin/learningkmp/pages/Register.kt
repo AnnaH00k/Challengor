@@ -160,7 +160,7 @@ fun Register(
         CenteredRow() {
             MainButton(
                 text = "Register",
-                enabled = isPasswordValid.value && !usernameExists.value && !emailExists.value,
+                enabled = isPasswordValid.value && passwordState.value.isNotEmpty() && isEmailValid.value && emailState.value.isNotEmpty() && nameState.value.isNotEmpty() && !usernameExists.value,
                 onClick = {
                     if (registeredUsers.any {
                             it.email.equals(
