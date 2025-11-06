@@ -62,7 +62,7 @@ fun App() {
                 },
                 onRegisterSubmit = { name, email, password ->
                     val newUser = User(
-                        id = AutoIncrementIdGenerator(registeredUsers){ user -> user.id },
+                        id = AutoIncrementIdGenerator(registeredUsers) { user -> user.id },
                         name = name,
                         email = email,
                         password = password,
@@ -71,6 +71,10 @@ fun App() {
                     registeredUsers = registeredUsers + newUser
                     currentUser = newUser
                     currentScreen = Screen.DASHBOARD
+                },
+                registeredUsers = registeredUsers,
+                onGoToLogin = {
+                    currentScreen = Screen.LOGIN
                 }
             )
         }
