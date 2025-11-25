@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import tech.hookin.learningkmp.objects.User
 import tech.hookin.learningkmp.ui.components.H2
@@ -90,53 +89,75 @@ fun VerticalTable(registeredUsers: List<User>) {
 @Composable
 fun Dashboard(
     backClick: () -> Unit,
-    currentUser: User,
-    registeredUsers: List<User>
+    currentUser: User?,
+    registeredUsers: List<User>,
+    onRequireLogin: () -> Unit,
+    onLogout: () -> Unit
+
 ) {
-    MainPage(
-        background = "#BED8C3",
-        textColor = "#202226"
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start
+    if (currentUser == null) {
+        MainPage(background = "#BED8C3", textColor = "#202226") {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Text("Log in to see this page.")
                 MainButton(
-                    text = "Back",
-                    onClick = backClick,
+                    text = "Go to Landingpage",
+                    onClick = onRequireLogin
                 )
             }
-
+        }
+    }
+    else {
+        MainPage(
+            background = "#BED8C3",
+            textColor = "#202226"
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .widthIn(max = 800.dp)
-                    .padding(horizontal = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                    .padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                H2("Welcome ${currentUser.name}")
-
-                Text(
-                    " ${currentUser.email}",
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    maxLines = 1
-                )
-                Text(
-                    "ID: ${currentUser.id}",
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    MainButton(
+                        text = "Back",
+                        onClick = backClick,
+                    )
+                    MainButton(
+                        text = "Logout",
+                        onClick = onLogout,
+                    )
+                }
 
-                H2("All Registered Users")
-                VerticalTable(registeredUsers)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .widthIn(max = 800.dp)
+                        .padding(horizontal = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    H2("Welcome ${currentUser.name}")
+
+                    Text(
+                        " ${currentUser.email}",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        maxLines = 1
+                    )
+                    Text(
+                        "ID: ${currentUser.id}",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+
+                    H2("All Registered Users")
+                    VerticalTable(registeredUsers)
+                }
             }
         }
     }

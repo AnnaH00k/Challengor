@@ -22,8 +22,10 @@ import tech.hookin.learningkmp.ui.utils.getScreenWidthDp
 @Preview
 fun Landingpage(
     modifier: Modifier = Modifier,
+    isLoggedIn: Boolean = false,
     NavigateToLogin: () -> Unit = {},
     NavigateToRegister: () -> Unit = {},
+    NavigateToDashboard: () -> Unit = {}
 ) {
 
     MainPage(background = "#BED8C3", textColor = "#202226") {
@@ -37,20 +39,21 @@ fun Landingpage(
 
 
         CenteredRow {
-
-
-            MainButton(
-                text = "Login",
-                onClick = NavigateToLogin,
-            )
-            MainButton(
-                text = "Register",
-                onClick = NavigateToRegister,
-            )
+            if (!isLoggedIn) {
+                MainButton(
+                    text = "Login",
+                    onClick = NavigateToLogin,
+                )
+                MainButton(
+                    text = "Register",
+                    onClick = NavigateToRegister,
+                )
+            } else {
+                MainButton(
+                    text = "Dashboard",
+                    onClick = NavigateToDashboard,
+                )
+            }
         }
-
-
     }
-
 }
-

@@ -44,11 +44,15 @@ fun App() {
     when (currentScreen) {
         Screen.HOME -> {
             Landingpage(
+                isLoggedIn = currentUser != null,
                 NavigateToLogin = {
                     currentScreen = Screen.LOGIN
                 },
                 NavigateToRegister = {
                     currentScreen = Screen.REGISTER
+                },
+                NavigateToDashboard = {
+                    currentScreen = Screen.DASHBOARD
                 }
             )
         }
@@ -98,13 +102,18 @@ fun App() {
 
 
         Screen.DASHBOARD -> {
-            currentUser?.let { user ->
-                Dashboard(
-                    backClick = { currentScreen = Screen.HOME },
-                    currentUser = user,
-                    registeredUsers = registeredUsers
-                )
-            }
+            Dashboard(
+                backClick = { currentScreen = Screen.HOME },
+                currentUser = currentUser,
+                registeredUsers = registeredUsers,
+                onRequireLogin = {
+                    currentScreen = Screen.HOME
+                },
+                onLogout = {
+                    currentUser = null
+                    currentScreen = Screen.HOME
+                }
+            )
         }
 
     }
