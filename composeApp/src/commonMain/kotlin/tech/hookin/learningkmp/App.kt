@@ -1,6 +1,7 @@
 package tech.hookin.learningkmp
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -12,6 +13,7 @@ import tech.hookin.learningkmp.objects.User
 import tech.hookin.learningkmp.pages.Login
 import tech.hookin.learningkmp.pages.Register
 import tech.hookin.learningkmp.pages.Dashboard
+import tech.hookin.learningkmp.storage.UserStorage
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -30,6 +32,14 @@ fun App() {
     var registeredUsers by remember { mutableStateOf<List<User>>(emptyList()) }
     val now = Clock.System.now()
     val localDateTime = now.toLocalDateTime(TimeZone.currentSystemDefault())
+
+    LaunchedEffect(Unit) {
+        registeredUsers = UserStorage.loadUsers()
+    }
+
+    LaunchedEffect(registeredUsers) {
+        UserStorage.saveUsers(registeredUsers)
+    }
 
     when (currentScreen) {
         Screen.HOME -> {

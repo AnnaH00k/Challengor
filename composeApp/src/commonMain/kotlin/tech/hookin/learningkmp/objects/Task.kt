@@ -1,5 +1,8 @@
 package tech.hookin.learningkmp.objects
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Task(
     val id: Int,
     val title: String,

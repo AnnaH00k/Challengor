@@ -26,7 +26,7 @@ fun Landingpage(
     NavigateToRegister: () -> Unit = {},
 ) {
 
-    MainPage(background = "#779F7F", textColor = "#202226") {
+    MainPage(background = "#BED8C3", textColor = "#202226") {
         val screenWidthDp = getScreenWidthDp()
 
 

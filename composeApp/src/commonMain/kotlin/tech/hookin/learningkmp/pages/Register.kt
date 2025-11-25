@@ -60,7 +60,7 @@ fun Register(
 
 
 
-    MainPage(background = "#779F7F", textColor = "#202226") {
+    MainPage(background = "#BED8C3", textColor = "#202226") {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
             MainButton(
                 text = "Back",

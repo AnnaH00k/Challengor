@@ -1,9 +1,8 @@
 package tech.hookin.learningkmp.objects
 
-import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
+import kotlinx.serialization.Serializable
 
-
+@Serializable
 data class User (
     val id: Int,
     val name: String,

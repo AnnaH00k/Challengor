@@ -39,10 +39,15 @@ fun Login(
     val emailFocusRequester = remember { FocusRequester() }
     val passwordFocusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
-    val success = onLoginSubmit(emailState.value, passwordState.value)
+    var lastLoginSuccess = remember { mutableStateOf(false) }
 
+    fun tryLogin() {
+        val success = onLoginSubmit(emailState.value, passwordState.value)
+        lastLoginSuccess.value = success
+        showError.value = !success
+    }
 
-    MainPage(background = "#779F7F", textColor = "#202226") {
+    MainPage(background = "#BED8C3", textColor = "#202226") {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
             MainButton(
                 text = "Back",
@@ -77,7 +82,6 @@ fun Login(
                 keyboardActions = KeyboardActions(
                     onDone = {
                         focusManager.clearFocus()
-                        onLoginSubmit(emailState.value, passwordState.value)
                     }
                 )
             )
@@ -91,9 +95,9 @@ fun Login(
             CenteredRow {
                 MainButton(
                     text = "Login",
-                    enabled = success && isEmailValid.value && isPasswordValid.value ,
+                    enabled = isEmailValid.value && isPasswordValid.value,
                     onClick = {
-                        showError.value = !success
+                        tryLogin()  // Button -> Login
                     },
                 )
             }

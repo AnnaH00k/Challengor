@@ -94,7 +94,7 @@ fun Dashboard(
     registeredUsers: List<User>
 ) {
     MainPage(
-        background = "#779F7F",
+        background = "#BED8C3",
         textColor = "#202226"
     ) {
         Column(
