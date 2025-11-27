@@ -10,6 +10,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import tech.hookin.learningkmp.components.AutoIncrementIdGenerator
 import tech.hookin.learningkmp.objects.User
+import tech.hookin.learningkmp.pages.AdminBoard
 import tech.hookin.learningkmp.pages.Login
 import tech.hookin.learningkmp.pages.Register
 import tech.hookin.learningkmp.pages.Dashboard
@@ -21,7 +22,8 @@ enum class Screen {
     HOME,
     LOGIN,
     REGISTER,
-    DASHBOARD
+    DASHBOARD,
+    ADMINBOARD
 }
 
 @OptIn(ExperimentalTime::class)
@@ -35,10 +37,16 @@ fun App() {
 
     LaunchedEffect(Unit) {
         registeredUsers = UserStorage.loadUsers()
+        currentUser = UserStorage.loadCurrentUser()
+
     }
 
     LaunchedEffect(registeredUsers) {
         UserStorage.saveUsers(registeredUsers)
+    }
+
+    LaunchedEffect(currentUser) {
+        UserStorage.saveCurrentUser(currentUser)
     }
 
     when (currentScreen) {
@@ -105,9 +113,27 @@ fun App() {
             Dashboard(
                 backClick = { currentScreen = Screen.HOME },
                 currentUser = currentUser,
+                onRequireLogin = {
+                    currentScreen = Screen.HOME
+                },
+                registeredUsers = registeredUsers,
+                onLogout = {
+                    currentUser = null
+                    currentScreen = Screen.HOME
+                }
+            )
+        }
+
+        Screen.ADMINBOARD -> {
+            AdminBoard(
+                backClick = { currentScreen = Screen.HOME },
+                currentUser = currentUser,
                 registeredUsers = registeredUsers,
                 onRequireLogin = {
                     currentScreen = Screen.HOME
+                },
+                onSwitchToUserDashboard = {
+                    currentScreen = Screen.DASHBOARD
                 },
                 onLogout = {
                     currentUser = null
@@ -115,6 +141,9 @@ fun App() {
                 }
             )
         }
+
+
+
 
     }
 

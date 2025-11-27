@@ -59,7 +59,7 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.multiplatform.settings)
             implementation(libs.kotlinx.serialization.json)
-
+            implementation("com.adamglin:phosphor-icon:1.0.0")
 
         }
         commonTest.dependencies {
