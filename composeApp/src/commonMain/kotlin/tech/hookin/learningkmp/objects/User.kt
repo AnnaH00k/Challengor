@@ -9,5 +9,5 @@ data class User (
     val password: String,
     val email: String,
     val registeredOn: String,
-    var createdChallenges: List<Challenge> = emptyList(),
+    val createdChallengeIds: List<Int> = emptyList(),
 )

@@ -17,6 +17,13 @@ import tech.hookin.learningkmp.pages.Dashboard
 import tech.hookin.learningkmp.storage.UserStorage
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import tech.hookin.learningkmp.objects.Challenge
+import tech.hookin.learningkmp.objects.ChallengeType
+import tech.hookin.learningkmp.objects.ChallengeTypeRef
+import tech.hookin.learningkmp.storage.ChallengeStorage
+import tech.hookin.learningkmp.storage.ChallengeTypeRefStorage
+import tech.hookin.learningkmp.storage.ChallengeTypeStorage
+
 
 enum class Screen {
     HOME,
@@ -25,6 +32,9 @@ enum class Screen {
     DASHBOARD,
     ADMINBOARD
 }
+private fun normalizeTypeName(raw: String): String =
+    raw.trim().lowercase()
+
 
 @OptIn(ExperimentalTime::class)
 @Composable
@@ -32,22 +42,37 @@ fun App() {
     var currentScreen by remember { mutableStateOf(Screen.HOME) }
     var currentUser by remember { mutableStateOf<User?>(null) }
     var registeredUsers by remember { mutableStateOf<List<User>>(emptyList()) }
+    var allChallenges by remember { mutableStateOf<List<Challenge>>(emptyList()) }
+    var allChallengeTypes by remember { mutableStateOf<List<ChallengeType>>(emptyList()) }
+    var allChallengeTypeRefs by remember { mutableStateOf<List<ChallengeTypeRef>>(emptyList()) }
     val now = Clock.System.now()
     val localDateTime = now.toLocalDateTime(TimeZone.currentSystemDefault())
+
 
     LaunchedEffect(Unit) {
         registeredUsers = UserStorage.loadUsers()
         currentUser = UserStorage.loadCurrentUser()
+        allChallenges = ChallengeStorage.loadChallenges()
+        allChallengeTypes = ChallengeTypeStorage.loadChallengeTypes()
+        allChallengeTypeRefs = ChallengeTypeRefStorage.loadRefs()
 
     }
-
     LaunchedEffect(registeredUsers) {
         UserStorage.saveUsers(registeredUsers)
     }
-
     LaunchedEffect(currentUser) {
         UserStorage.saveCurrentUser(currentUser)
     }
+    LaunchedEffect(allChallenges) {
+        ChallengeStorage.saveChallenges(allChallenges)
+    }
+    LaunchedEffect(allChallengeTypes) {
+        ChallengeTypeStorage.saveChallengeTypes(allChallengeTypes)
+    }
+    LaunchedEffect(allChallengeTypeRefs) {
+        ChallengeTypeRefStorage.saveRefs(allChallengeTypeRefs)
+    }
+
 
     when (currentScreen) {
         Screen.HOME -> {
@@ -95,7 +120,7 @@ fun App() {
                         email = email,
                         password = password,
                         registeredOn = localDateTime.toString(),
-                        createdChallenges = emptyList()
+                        createdChallengeIds = emptyList()
                     )
                     registeredUsers = registeredUsers + newUser
                     currentUser = newUser
@@ -113,13 +138,67 @@ fun App() {
             Dashboard(
                 backClick = { currentScreen = Screen.HOME },
                 currentUser = currentUser,
-                onRequireLogin = {
-                    currentScreen = Screen.HOME
-                },
+                onRequireLogin = { currentScreen = Screen.HOME },
                 registeredUsers = registeredUsers,
                 onLogout = {
                     currentUser = null
                     currentScreen = Screen.HOME
+                },
+                allChallenges = allChallenges,
+                allChallengeTypes = allChallengeTypes,
+                allChallengeTypeRefs = allChallengeTypeRefs,
+                onCreateChallengeWithType = { name, description, typeTitle ->
+                    val user = currentUser ?: return@Dashboard
+                    // 1) parse comma-separated type names
+                    val rawNames = typeTitle.split(',')
+                        .map { it.trim() }
+                        .filter { it.isNotEmpty() }
+                    val normalizedNames = rawNames
+                        .map { normalizeTypeName(it) }
+                        .distinct()
+
+                    if (rawNames.isEmpty()) return@Dashboard
+                    if (normalizedNames.isEmpty()) return@Dashboard
+
+                    // 2) ensure each type exists (case-insensitive via normalized name)
+                    var localTypes = allChallengeTypes
+                    val ensuredTypes = mutableListOf<ChallengeType>()
+                    normalizedNames.forEach { norm ->
+                        val existing = localTypes.find { it.name == norm }
+                        val type = existing ?: ChallengeType(name = norm).also { newType ->
+                            localTypes = localTypes + newType
+                        }
+                        ensuredTypes += type
+                    }
+                    allChallengeTypes = localTypes
+
+
+                    // 3) create challenge
+                    val newChallengeId = (allChallenges.maxOfOrNull { it.id } ?: 0) + 1
+                    val newChallenge = Challenge(
+                        id = newChallengeId,
+                        name = name,
+                        description = description
+                    )
+                    allChallenges = allChallenges + newChallenge
+
+                    // 4) create refs for each type
+                    val newRefs = ensuredTypes.map { type ->
+                        ChallengeTypeRef(
+                            challengeId = newChallengeId,
+                            typeName = type.name
+                        )
+                    }
+                    allChallengeTypeRefs = allChallengeTypeRefs + newRefs
+
+                    // 5) update user’s createdChallengeIds
+                    val updatedUser = user.copy(
+                        createdChallengeIds = user.createdChallengeIds + newChallengeId
+                    )
+                    registeredUsers = registeredUsers.map {
+                        if (it.id == updatedUser.id) updatedUser else it
+                    }
+                    currentUser = updatedUser
                 }
             )
         }
@@ -129,6 +208,8 @@ fun App() {
                 backClick = { currentScreen = Screen.HOME },
                 currentUser = currentUser,
                 registeredUsers = registeredUsers,
+                allChallenges = allChallenges,
+                allChallengeTypeRefs = allChallengeTypeRefs,
                 onRequireLogin = {
                     currentScreen = Screen.HOME
                 },
@@ -141,10 +222,6 @@ fun App() {
                 }
             )
         }
-
-
-
-
     }
 
 }

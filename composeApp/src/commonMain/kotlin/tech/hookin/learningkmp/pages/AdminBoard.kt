@@ -17,12 +17,15 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.ArrowLeft
 import com.adamglin.phosphoricons.regular.SignOut
+import tech.hookin.learningkmp.objects.Challenge
 import tech.hookin.learningkmp.objects.User
 import tech.hookin.learningkmp.ui.components.H2
 import tech.hookin.learningkmp.ui.components.HexToColor
 import tech.hookin.learningkmp.ui.components.MainButton
 import tech.hookin.learningkmp.ui.components.MainPage
 import kotlin.time.ExperimentalTime
+import tech.hookin.learningkmp.objects.ChallengeTypeRef
+
 
 private val borderColor = HexToColor("#435A4D")
 private val borderWidth = 1.dp
@@ -66,7 +69,11 @@ private fun UserTableColumn(
 
 @OptIn(ExperimentalTime::class)
 @Composable
-fun VerticalTable(registeredUsers: List<User>) {
+fun VerticalTable(
+    registeredUsers: List<User>,
+    allChallenges: List<Challenge>,
+    allChallengeTypeRefs: List<ChallengeTypeRef>
+) {
     val scrollState = rememberScrollState()
 
     val idValues = registeredUsers.map { it.id.toString() }
@@ -74,6 +81,29 @@ fun VerticalTable(registeredUsers: List<User>) {
     val emailValues = registeredUsers.map { it.email }
     val passwordValues = registeredUsers.map { it.password }
     val registeredOnValues = registeredUsers.map { it.registeredOn.toString() }
+    val createdChallengesValues = registeredUsers.map { user ->
+        val userChallenges = allChallenges.filter { it.id in user.createdChallengeIds }
+        if (userChallenges.isEmpty()) {
+            "No challenges created"
+        } else {
+            userChallenges.joinToString(", ") { it.name }
+        }
+    }
+    val challengeTypesValues = registeredUsers.map { user ->
+        val userChallengeIds = user.createdChallengeIds
+        val userTypeNames = allChallengeTypeRefs
+            .filter { it.challengeId in userChallengeIds }
+            .map { it.typeName }
+            .distinct()
+
+        if (userTypeNames.isEmpty()) {
+            "No challenge types"
+        } else {
+            userTypeNames.joinToString(", ")
+        }
+    }
+
+
 
     Box(
         modifier = Modifier
@@ -89,6 +119,9 @@ fun VerticalTable(registeredUsers: List<User>) {
             UserTableColumn("Email", emailValues)
             UserTableColumn("Password", passwordValues)
             UserTableColumn("Registered on", registeredOnValues)
+            UserTableColumn("Created challenges", createdChallengesValues)
+            UserTableColumn("ChallengeTypes", challengeTypesValues)
+
         }
     }
 }
@@ -98,6 +131,8 @@ fun AdminBoard(
     backClick: () -> Unit,
     currentUser: User?,
     registeredUsers: List<User>,
+    allChallenges: List<Challenge>,
+    allChallengeTypeRefs: List<ChallengeTypeRef>,
     onRequireLogin: () -> Unit,
     onLogout: () -> Unit,
     onSwitchToUserDashboard: () -> Unit
@@ -174,7 +209,11 @@ fun AdminBoard(
                     )
 
                     H2("All Registered Users")
-                    VerticalTable(registeredUsers)
+                    VerticalTable(
+                        registeredUsers = registeredUsers,
+                        allChallenges = allChallenges,
+                        allChallengeTypeRefs = allChallengeTypeRefs
+                    )
                 }
             }
         }

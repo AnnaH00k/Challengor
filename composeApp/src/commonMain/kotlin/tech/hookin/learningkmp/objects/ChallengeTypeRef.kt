@@ -3,6 +3,7 @@ package tech.hookin.learningkmp.objects
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ChallengeType(
-    val name: String,
+data class ChallengeTypeRef(
+    val challengeId: Int,
+    val typeName: String
 )
