@@ -1,8 +1,0 @@
-package tech.hookin.learningkmp.objects
-
-import kotlinx.serialization.Serializable
-
-@Serializable
-data class ChallengeType(
-    val name: String,
-)

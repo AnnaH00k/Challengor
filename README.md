@@ -1,10 +1,36 @@
-![Last Commit](https://img.shields.io/github/last-commit/AnnaH00k/learningKMP?style=flat-square&color=purple)
-![Contributors](https://img.shields.io/github/contributors/AnnaH00k/learningKMP?style=flat-square&color=teal)
-![Repo Size](https://img.shields.io/github/repo-size/AnnaH00k/learningKMP?style=flat-square&color=gray)
+# Challengor
 
-![Cute Cat Animation](https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif)
+![Last Commit](https://img.shields.io/github/last-commit/AnnaH00k/Challengor?style=flat-square&color=purple)
+![Contributors](https://img.shields.io/github/contributors/AnnaH00k/Challengor?style=flat-square&color=teal)
+![Repo Size](https://img.shields.io/github/repo-size/AnnaH00k/Challengor?style=flat-square&color=gray)
 
+<img src="composeApp/src/commonMain/composeResources/drawable/logo_challengor.png" alt="Challengor logo" width="120">
 
+**Find and create your next challenge.** Challengor is a Compose Multiplatform app for
+Android, iOS, Desktop (Windows/macOS/Linux) and Web (JS + Wasm). Live web version: `docs/` (GitHub Pages).
+
+### Project structure (composeApp/commonMain, package `tech.hookin.challengor`)
+
+| Package | Purpose |
+|---|---|
+| `model` | Serializable data classes (`User`, `Challenge`, …) |
+| `domain` | Pure logic: input validation, type parsing |
+| `data` | `ChallengorRepository` (persistence via multiplatform-settings), `PasswordHasher` |
+| `ui` | `AppViewModel`, `screens`, reusable `components`, `theme` (colour palette) |
+| `navigation` | `Screen` enum |
+
+Colours: `#C5CDB6` sage · `#1F2C13` forest green · `#000702` near black · `#A94802` errors.
+
+Run tests on all available targets: `./gradlew :composeApp:allTests :server:test`
+
+### Update the live website
+
+```shell
+./gradlew :composeApp:jsBrowserDistribution
+# then replace the contents of docs/ with composeApp/build/dist/js/productionExecutable/
+```
+
+---
 
 This is a Kotlin Multiplatform project targeting Android, iOS, Web, Desktop (JVM), Server.
 

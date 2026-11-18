@@ -4,10 +4,10 @@ plugins {
     application
 }
 
-group = "tech.hookin.learningkmp"
+group = "tech.hookin.challengor"
 version = "1.0.0"
 application {
-    mainClass.set("tech.hookin.learningkmp.ApplicationKt")
+    mainClass.set("tech.hookin.challengor.ApplicationKt")
     
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")

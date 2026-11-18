@@ -59,42 +59,27 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.multiplatform.settings)
             implementation(libs.kotlinx.serialization.json)
-            implementation("com.adamglin:phosphor-icon:1.0.0")
-
+            implementation(libs.phosphor.icon)
+            implementation(libs.kotlincrypto.sha2)
+            implementation(libs.navigation.compose)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.multiplatform.settings.test)
         }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
         }
-        jsMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-        }
-        wasmJsMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-        }
-        all {
-            languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
-        }
     }
 }
 
 android {
-    namespace = "tech.hookin.learningkmp"
+    namespace = "tech.hookin.challengor"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "tech.hookin.learningkmp"
+        applicationId = "tech.hookin.challengor"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
@@ -120,14 +105,33 @@ dependencies {
     debugImplementation(compose.uiTooling)
 }
 
+compose.resources {
+    packageOfResClass = "tech.hookin.challengor.resources"
+}
+
 compose.desktop {
     application {
-        mainClass = "tech.hookin.learningkmp.MainKt"
+        mainClass = "tech.hookin.challengor.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "tech.hookin.learningkmp"
+            packageName = "Challengor"
             packageVersion = "1.0.0"
+            description = "Find and create your next challenge"
+            vendor = "hookin.tech"
+
+            windows {
+                iconFile.set(project.file("icons/challengor.ico"))
+                menuGroup = "Challengor"
+                shortcut = true
+            }
+            macOS {
+                iconFile.set(project.file("icons/challengor.icns"))
+                bundleID = "tech.hookin.challengor"
+            }
+            linux {
+                iconFile.set(project.file("icons/challengor.png"))
+            }
         }
     }
 }

@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		0EF4F167B6CBF3256B226094 /* LearningKMP.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LearningKMP.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0EF4F167B6CBF3256B226094 /* Challengor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Challengor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -59,7 +59,7 @@
 		8B6789AC340F77379BDCE9DE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				0EF4F167B6CBF3256B226094 /* LearningKMP.app */,
+				0EF4F167B6CBF3256B226094 /* Challengor.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -87,7 +87,7 @@
 			packageProductDependencies = (
 			);
 			productName = iosApp;
-			productReference = 0EF4F167B6CBF3256B226094 /* LearningKMP.app */;
+			productReference = 0EF4F167B6CBF3256B226094 /* Challengor.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */

@@ -1,4 +1,4 @@
-rootProject.name = "LearningKMP"
+rootProject.name = "Challengor"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
