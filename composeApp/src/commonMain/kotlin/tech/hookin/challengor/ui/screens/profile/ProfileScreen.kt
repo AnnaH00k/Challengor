@@ -12,6 +12,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,6 +27,7 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.ShieldCheck
 import com.adamglin.phosphoricons.regular.SignOut
+import tech.hookin.challengor.data.AppTheme
 import tech.hookin.challengor.ui.components.Avatar
 import tech.hookin.challengor.ui.components.ChallengeCard
 import tech.hookin.challengor.ui.components.ContentList
@@ -32,11 +36,11 @@ import tech.hookin.challengor.ui.components.SectionTitle
 import tech.hookin.challengor.ui.screens.explore.ChallengeListItem
 import tech.hookin.challengor.ui.utils.formatDate
 import tech.hookin.challengor.ui.theme.neumorphic
-import tech.hookin.challengor.ui.theme.OnSage
+import tech.hookin.challengor.ui.theme.OnCard
 
 /**
  * A user's profile: who they are, their numbers and their challenges.
- * On the own profile it also offers logout and, for admins, the admin board.
+ * On the own profile it also offers logout, settings (when [theme] is given) and, for admins, the admin board.
  */
 @Composable
 fun ProfileScreen(
@@ -44,6 +48,8 @@ fun ProfileScreen(
     onOpenChallenge: (String) -> Unit,
     onOpenAdmin: (() -> Unit)? = null,
     onLogout: (() -> Unit)? = null,
+    theme: AppTheme? = null,
+    onThemeChange: (AppTheme) -> Unit = {},
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val profile = state.profile ?: run {
@@ -96,6 +102,11 @@ fun ProfileScreen(
             }
         }
 
+        if (state.isMe && theme != null) {
+            item { SectionTitle("Settings") }
+            item { ThemeSetting(theme, onThemeChange) }
+        }
+
         challengeSection("Taking part", state.challenges.active, onOpenChallenge)
         challengeSection("Finished", state.challenges.finished, onOpenChallenge)
         challengeSection("Created", state.challenges.created, onOpenChallenge)
@@ -121,8 +132,31 @@ private fun LazyListScope.challengeSection(
 }
 
 @Composable
+private fun ThemeSetting(theme: AppTheme, onThemeChange: (AppTheme) -> Unit) {
+    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Text("Theme", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+        SingleChoiceSegmentedButtonRow {
+            AppTheme.entries.forEachIndexed { index, entry ->
+                SegmentedButton(
+                    selected = theme == entry,
+                    onClick = { onThemeChange(entry) },
+                    shape = SegmentedButtonDefaults.itemShape(index, AppTheme.entries.size),
+                    icon = {},
+                    colors = SegmentedButtonDefaults.colors(
+                        activeContainerColor = MaterialTheme.colorScheme.primary,
+                        activeContentColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
+                ) {
+                    Text(if (entry == AppTheme.DARK) "Dark" else "Light")
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun Stat(label: String, value: Int, modifier: Modifier = Modifier) {
-    OnSage {
+    OnCard {
         Card(
             modifier = modifier.neumorphic(CardDefaults.shape),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),

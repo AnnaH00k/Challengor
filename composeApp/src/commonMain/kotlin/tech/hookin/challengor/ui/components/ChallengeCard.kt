@@ -22,7 +22,7 @@ import tech.hookin.challengor.model.Challenge
 import tech.hookin.challengor.ui.utils.label
 import tech.hookin.challengor.ui.utils.plural
 import tech.hookin.challengor.ui.theme.neumorphic
-import tech.hookin.challengor.ui.theme.OnSage
+import tech.hookin.challengor.ui.theme.OnCard
 
 /** List entry for a challenge, optionally with the viewer's own progress. */
 @OptIn(ExperimentalLayoutApi::class)
@@ -35,7 +35,7 @@ fun ChallengeCard(
     modifier: Modifier = Modifier,
     progress: ChallengeProgress? = null,
 ) {
-    OnSage {
+    OnCard {
         Card(
             onClick = onClick,
             modifier = modifier.fillMaxWidth().neumorphic(CardDefaults.shape),

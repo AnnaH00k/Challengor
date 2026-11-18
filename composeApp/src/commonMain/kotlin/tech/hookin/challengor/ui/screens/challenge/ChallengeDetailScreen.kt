@@ -64,7 +64,7 @@ import tech.hookin.challengor.ui.utils.plural
 import tech.hookin.challengor.ui.utils.rememberShareSheet
 import tech.hookin.challengor.ui.utils.short
 import tech.hookin.challengor.ui.theme.neumorphic
-import tech.hookin.challengor.ui.theme.OnSage
+import tech.hookin.challengor.ui.theme.OnCard
 
 private const val PREVIEW_DAYS = 7
 
@@ -230,7 +230,7 @@ private fun InfoLine(label: String, value: String) {
 @Composable
 private fun ProgressCard(checklist: DayChecklist) {
     val progress = checklist.progress
-    OnSage {
+    OnCard {
         Card(
             modifier = Modifier.fillMaxWidth().neumorphic(CardDefaults.shape),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -267,7 +267,7 @@ private fun DayChecklistCard(
     onToggle: (taskId: String, done: Boolean) -> Unit,
     onLogAmount: (taskId: String, amount: Int) -> Unit,
 ) {
-    OnSage {
+    OnCard {
         Card(
             modifier = Modifier.fillMaxWidth().neumorphic(CardDefaults.shape),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -296,7 +296,7 @@ private fun DayChecklistCard(
 @Composable
 private fun TaskPreview(state: ChallengeDetailUiState) {
     val challenge = state.challenge ?: return
-    OnSage {
+    OnCard {
         Card(
             modifier = Modifier.fillMaxWidth().neumorphic(CardDefaults.shape),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),

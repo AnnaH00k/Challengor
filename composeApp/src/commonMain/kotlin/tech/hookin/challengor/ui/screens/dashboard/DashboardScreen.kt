@@ -44,10 +44,13 @@ import tech.hookin.challengor.ui.screens.people.PeopleScreen
 import tech.hookin.challengor.ui.screens.people.PeopleViewModel
 import tech.hookin.challengor.ui.screens.profile.ProfileScreen
 import tech.hookin.challengor.ui.screens.profile.ProfileViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import tech.hookin.challengor.ui.screens.today.DayNavigator
 import tech.hookin.challengor.ui.screens.today.TodayScreen
 import tech.hookin.challengor.ui.screens.today.TodayViewModel
 import tech.hookin.challengor.ui.utils.isWideScreen
 import androidx.compose.ui.unit.dp
+import tech.hookin.challengor.ui.theme.LocalAppTheme
 import tech.hookin.challengor.ui.theme.bottomBarShadow
 
 enum class DashboardSection(val label: String, val shortLabel: String, val icon: ImageVector) {
@@ -74,10 +77,26 @@ fun DashboardScreen(
     var section by rememberSaveable { mutableStateOf(DashboardSection.TODAY) }
     val wide = isWideScreen()
     val container = LocalAppContainer.current
+    // Shared by the top bar's day navigation and the Today tab.
+    val todayViewModel = viewModel { TodayViewModel(container, user.id) }
+    val appTheme = LocalAppTheme.current
 
     Scaffold(
         topBar = {
-            DashboardTopBar(title = section.label) {
+            val todayState by todayViewModel.uiState.collectAsStateWithLifecycle()
+            val todayTab = section == DashboardSection.TODAY
+            DashboardTopBar(
+                title = section.label,
+                onLogoClick = {
+                    section = DashboardSection.TODAY
+                    todayViewModel.goToToday()
+                },
+                centerContent = if (todayTab) {
+                    { DayNavigator(state = todayState, onShiftDays = todayViewModel::shiftDays) }
+                } else {
+                    null
+                },
+            ) {
                 if (user.isAdmin) {
                     IconButton(onClick = onOpenAdmin) { Icon(PhosphorIcons.Regular.ShieldCheck, contentDescription = "Admin board") }
                 }
@@ -140,7 +159,7 @@ fun DashboardScreen(
                 val goTo = { target: DashboardSection -> section = target }
                 when (section) {
                     DashboardSection.TODAY -> TodayScreen(
-                        viewModel = viewModel { TodayViewModel(container, user.id) },
+                        viewModel = todayViewModel,
                         onOpenChallenge = onOpenChallenge,
                         onCreate = onCreate,
                         onExplore = { goTo(DashboardSection.EXPLORE) },
@@ -169,6 +188,8 @@ fun DashboardScreen(
                         onOpenChallenge = onOpenChallenge,
                         onOpenAdmin = onOpenAdmin,
                         onLogout = onLogout,
+                        theme = appTheme,
+                        onThemeChange = container.preferences::setTheme,
                     )
                 }
             }

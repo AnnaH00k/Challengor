@@ -1,8 +1,12 @@
 package tech.hookin.challengor.ui.screens.today
 
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
+import kotlinx.datetime.plus
 import tech.hookin.challengor.data.AppContainer
 import tech.hookin.challengor.data.LocalState
 import tech.hookin.challengor.data.challenge
@@ -42,12 +46,39 @@ data class DayChecklist(
 
 data class TodayUiState(
     val today: LocalDate,
+    val selectedDate: LocalDate = today,
+    /** Checklists of [selectedDate]. */
     val active: List<DayChecklist> = emptyList(),
     val upcoming: List<DayChecklist> = emptyList(),
+    /** Whether the user takes part in any challenge at all. */
+    val hasParticipations: Boolean = false,
 ) {
+    val isTodaySelected: Boolean get() = selectedDate == today
     val tasksDone: Int get() = active.sumOf { item -> item.tasks.count { it.isComplete } }
     val tasksTotal: Int get() = active.sumOf { it.tasks.size }
-    val isEmpty: Boolean get() = active.isEmpty() && upcoming.isEmpty()
+    val isEmpty: Boolean get() = !hasParticipations
+}
+
+/** Builds the Today tab's state for [userId], showing [selectedDate]. */
+fun LocalState.todayUiState(
+    userId: String,
+    today: LocalDate,
+    selectedDate: LocalDate,
+): TodayUiState {
+    val mine = participations.filter { it.userId == userId && !it.left }
+    return TodayUiState(
+        today = today,
+        selectedDate = selectedDate,
+        active = mine
+            .filter { selectedDate in it.window }
+            .mapNotNull { checklistFor(it, selectedDate, today) }
+            .sortedBy { it.allDone },
+        upcoming = if (selectedDate != today) emptyList() else mine
+            .filter { it.startDate > today }
+            .sortedBy { it.startDate }
+            .mapNotNull { checklistFor(it, it.startDate, today) },
+        hasParticipations = mine.isNotEmpty(),
+    )
 }
 
 /** The tasks a participant has to do on [date] in one challenge. */
@@ -81,27 +112,30 @@ class TodayViewModel(
     private val userId: String,
 ) : ViewModel() {
 
-    val uiState = uiStateOf(container.store) { state ->
-        val today = container.clock.today()
-        val mine = state.participations.filter { it.userId == userId && !it.left }
-        TodayUiState(
-            today = today,
-            active = mine
-                .filter { today in it.window }
-                .mapNotNull { state.checklistFor(it, today, today) }
-                .sortedBy { it.allDone },
-            upcoming = mine
-                .filter { it.startDate > today }
-                .sortedBy { it.startDate }
-                .mapNotNull { state.checklistFor(it, it.startDate, today) },
-        )
+    private val selectedDate = MutableStateFlow(container.clock.today())
+
+    private fun build(state: LocalState, date: LocalDate) =
+        state.todayUiState(userId, container.clock.today(), date)
+
+    val uiState = uiStateOf(
+        combine(container.store.state, selectedDate, ::build),
+        build(container.store.current, selectedDate.value),
+    )
+
+    /** Moves the selection [days] days forward (or back, if negative). */
+    fun shiftDays(days: Int) {
+        selectedDate.value = selectedDate.value.plus(days, DateTimeUnit.DAY)
     }
 
-    fun setDone(participationId: String, taskId: String, done: Boolean) {
-        container.challenges.setTaskDone(participationId, taskId, container.clock.today(), done)
+    fun goToToday() {
+        selectedDate.value = container.clock.today()
     }
 
-    fun logAmount(participationId: String, taskId: String, amount: Int) {
-        container.challenges.logAmount(participationId, taskId, container.clock.today(), amount)
+    fun setDone(participationId: String, taskId: String, date: LocalDate, done: Boolean) {
+        container.challenges.setTaskDone(participationId, taskId, date, done)
+    }
+
+    fun logAmount(participationId: String, taskId: String, date: LocalDate, amount: Int) {
+        container.challenges.logAmount(participationId, taskId, date, amount)
     }
 }

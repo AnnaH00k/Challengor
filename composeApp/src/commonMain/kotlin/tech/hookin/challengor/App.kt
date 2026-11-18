@@ -46,17 +46,23 @@ import tech.hookin.challengor.ui.screens.profile.ProfileScreen
 import tech.hookin.challengor.ui.screens.profile.ProfileViewModel
 import tech.hookin.challengor.ui.components.BackTopBar
 import tech.hookin.challengor.ui.theme.ChallengorTheme
+import tech.hookin.challengor.ui.theme.PlatformThemeEffect
 
 /**
  * Root of the app on every platform.
  * [initialChallengeId] comes from a shared link (web) and opens that challenge after login.
+ * [container] can be passed in when the platform shell needs it too (e.g. the desktop window icon).
  */
 @Composable
-fun App(initialChallengeId: String? = null) {
-    val container = remember { AppContainer() }
+fun App(
+    initialChallengeId: String? = null,
+    container: AppContainer = remember { AppContainer() },
+) {
+    val theme by container.preferences.theme.collectAsStateWithLifecycle()
+    PlatformThemeEffect(theme)
 
     CompositionLocalProvider(LocalAppContainer provides container) {
-        ChallengorTheme {
+        ChallengorTheme(theme) {
             val user by container.auth.currentUser.collectAsStateWithLifecycle(container.auth.currentUser())
             val navController = rememberNavController()
             var pendingChallengeId by remember { mutableStateOf(initialChallengeId) }

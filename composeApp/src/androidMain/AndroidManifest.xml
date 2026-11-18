@@ -10,13 +10,39 @@
         android:theme="@android:style/Theme.Material.NoActionBar">
         <activity
             android:exported="true"
-            android:name=".MainActivity">
+            android:name=".MainActivity" />
+
+        <!--
+            Two launcher entries for the same activity, one per app icon.
+            Only one is enabled at a time; LauncherIcon.kt switches them to match the chosen theme.
+        -->
+        <activity-alias
+            android:name=".LauncherDark"
+            android:enabled="true"
+            android:exported="true"
+            android:icon="@mipmap/logochallengor"
+            android:roundIcon="@mipmap/logochallengor_round"
+            android:targetActivity=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".LauncherLight"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/logochallengor_light"
+            android:roundIcon="@mipmap/logochallengor_light_round"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
     </application>
 
 </manifest>

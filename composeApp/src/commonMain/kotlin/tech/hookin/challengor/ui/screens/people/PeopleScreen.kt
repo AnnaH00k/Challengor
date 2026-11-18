@@ -23,7 +23,7 @@ import tech.hookin.challengor.ui.components.EmptyState
 import tech.hookin.challengor.ui.components.SearchField
 import tech.hookin.challengor.ui.utils.plural
 import tech.hookin.challengor.ui.theme.neumorphic
-import tech.hookin.challengor.ui.theme.OnSage
+import tech.hookin.challengor.ui.theme.OnCard
 
 @Composable
 fun PeopleScreen(
@@ -40,7 +40,7 @@ fun PeopleScreen(
         }
 
         items(state.people, key = { it.profile.id }) { person ->
-            OnSage {
+            OnCard {
                 Card(
                     onClick = { onOpenUser(person.profile.id) },
                     modifier = Modifier.fillMaxWidth().neumorphic(CardDefaults.shape),

@@ -1,10 +1,15 @@
 package tech.hookin.challengor.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,30 +26,49 @@ import androidx.compose.ui.unit.dp
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.ArrowLeft
-import org.jetbrains.compose.resources.painterResource
-import tech.hookin.challengor.resources.Res
-import tech.hookin.challengor.resources.logo_challengor
+import tech.hookin.challengor.ui.theme.logoPainter
 
-/** Top bar of the dashboard: logo, the current section and actions. */
+/**
+ * Top bar of the dashboard: logo, the current section and actions.
+ * [centerContent], if given, replaces the [title] and is shown centered in the bar.
+ * Tapping the logo calls [onLogoClick].
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardTopBar(
     title: String,
+    onLogoClick: () -> Unit,
+    centerContent: (@Composable () -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
+    if (centerContent != null) {
+        CenterAlignedTopAppBar(
+            title = centerContent,
+            // Same 16dp start inset as the logo in the regular title slot.
+            navigationIcon = { Logo(onLogoClick, Modifier.padding(start = 12.dp)) },
+            actions = actions,
+            colors = topBarColors(),
+        )
+        return
+    }
     TopAppBar(
         title = {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Image(
-                    painter = painterResource(Res.drawable.logo_challengor),
-                    contentDescription = "Challengor",
-                    modifier = Modifier.size(36.dp),
-                )
+                Logo(onLogoClick)
                 Text(title, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
         },
         actions = actions,
         colors = topBarColors(),
+    )
+}
+
+@Composable
+private fun Logo(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Image(
+        painter = logoPainter(),
+        contentDescription = "Go to today",
+        modifier = modifier.size(36.dp).clip(CircleShape).clickable(onClick = onClick),
     )
 }
 

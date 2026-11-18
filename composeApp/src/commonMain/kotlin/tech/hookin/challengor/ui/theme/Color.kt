@@ -9,6 +9,7 @@ object ChallengorColors {
     val ForestGreen = Color(0xFF1F2C13)
     val NearBlack = Color(0xFF000702)
     val Rust = Color(0xFFA94802)
+    val White = Color(0xFFFFFFFF)
 
     /** Tints between the brand colours, for layered surfaces (cards, bars, selected items). */
     val ForestDeep = lerp(NearBlack, ForestGreen, 0.55f)

@@ -11,4 +11,5 @@ class AppContainer(
     val store = LocalStore(settings, LegacyMigration(passwordHasher, clock, AuthRepository::roleFor))
     val auth = AuthRepository(store, passwordHasher, clock)
     val challenges = ChallengeRepository(store, clock)
+    val preferences = AppPreferences(settings)
 }
