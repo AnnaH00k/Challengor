@@ -47,6 +47,8 @@ import tech.hookin.challengor.ui.screens.profile.ProfileViewModel
 import tech.hookin.challengor.ui.screens.today.TodayScreen
 import tech.hookin.challengor.ui.screens.today.TodayViewModel
 import tech.hookin.challengor.ui.utils.isWideScreen
+import androidx.compose.ui.unit.dp
+import tech.hookin.challengor.ui.theme.bottomBarShadow
 
 enum class DashboardSection(val label: String, val shortLabel: String, val icon: ImageVector) {
     TODAY("Today", "Today", PhosphorIcons.Regular.CalendarCheck),
@@ -84,7 +86,11 @@ fun DashboardScreen(
         },
         bottomBar = {
             if (!wide) {
-                NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
+                NavigationBar(
+                    modifier = Modifier.bottomBarShadow(),
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    tonalElevation = 0.dp,
+                ) {
                     DashboardSection.entries.forEach { entry ->
                         NavigationBarItem(
                             selected = entry == section,

@@ -31,6 +31,8 @@ import tech.hookin.challengor.ui.components.EmptyState
 import tech.hookin.challengor.ui.components.SectionTitle
 import tech.hookin.challengor.ui.screens.explore.ChallengeListItem
 import tech.hookin.challengor.ui.utils.formatDate
+import tech.hookin.challengor.ui.theme.neumorphic
+import tech.hookin.challengor.ui.theme.OnSage
 
 /**
  * A user's profile: who they are, their numbers and their challenges.
@@ -120,16 +122,19 @@ private fun LazyListScope.challengeSection(
 
 @Composable
 private fun Stat(label: String, value: Int, modifier: Modifier = Modifier) {
-    Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
+    OnSage {
+        Card(
+            modifier = modifier.neumorphic(CardDefaults.shape),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            elevation = CardDefaults.cardElevation(0.dp),
         ) {
-            Text(value.toString(), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-            Text(label, style = MaterialTheme.typography.labelSmall, maxLines = 1)
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(value.toString(), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                Text(label, style = MaterialTheme.typography.labelSmall, maxLines = 1)
+            }
         }
     }
 }

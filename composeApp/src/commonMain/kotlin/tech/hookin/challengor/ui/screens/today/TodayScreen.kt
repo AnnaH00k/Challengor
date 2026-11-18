@@ -1,6 +1,5 @@
 package tech.hookin.challengor.ui.screens.today
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,6 +33,8 @@ import tech.hookin.challengor.ui.components.GoalSummary
 import tech.hookin.challengor.ui.utils.long
 import tech.hookin.challengor.ui.utils.short
 import tech.hookin.challengor.ui.utils.weekdayShort
+import tech.hookin.challengor.ui.theme.neumorphic
+import tech.hookin.challengor.ui.theme.OnSage
 
 @Composable
 fun TodayScreen(
@@ -115,41 +116,45 @@ private fun ChecklistCard(
     onLogAmount: (taskId: String, amount: Int) -> Unit,
     subtitle: String? = null,
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-    ) {
-        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth().clickable(onClick = onOpen),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = item.challenge.title,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    Text(
-                        text = subtitle
-                            ?: "Day ${item.dayNumber} of ${item.progress.days.size} · on track ${item.progress.onTrackPercent}%",
-                        style = MaterialTheme.typography.labelMedium,
-                    )
+    OnSage {
+        Card(
+            onClick = onOpen,
+            modifier = Modifier.fillMaxWidth().neumorphic(CardDefaults.shape),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            elevation = CardDefaults.cardElevation(0.dp),
+        ) {
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = item.challenge.title,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Text(
+                            text = subtitle
+                                ?: "Day ${item.dayNumber} of ${item.progress.days.size} · on track ${item.progress.onTrackPercent}%",
+                            style = MaterialTheme.typography.labelMedium,
+                        )
+                    }
+                    ProgressRing(item.progress, size = 48.dp)
                 }
-                ProgressRing(item.progress, size = 48.dp)
-            }
 
-            item.progress.goals.forEach { GoalSummary(it, modifier = Modifier.padding(vertical = 4.dp)) }
-            if (item.tasks.isEmpty()) {
-                Text("Rest day – nothing to do.", style = MaterialTheme.typography.bodySmall)
-            }
-            DayTaskList(item.tasks, item.editable, onToggle, onLogAmount)
-            if (item.allDone && item.editable) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Icon(PhosphorIcons.Regular.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                    Text("All done for today", style = MaterialTheme.typography.labelLarge)
+                item.progress.goals.forEach { GoalSummary(it, modifier = Modifier.padding(vertical = 4.dp)) }
+                if (item.tasks.isEmpty()) {
+                    Text("Rest day – nothing to do.", style = MaterialTheme.typography.bodySmall)
+                }
+                DayTaskList(item.tasks, item.editable, onToggle, onLogAmount)
+                if (item.allDone && item.editable) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Icon(PhosphorIcons.Regular.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                        Text("All done for today", style = MaterialTheme.typography.labelLarge)
+                    }
                 }
             }
         }

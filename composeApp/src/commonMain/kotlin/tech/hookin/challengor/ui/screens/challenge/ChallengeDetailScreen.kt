@@ -63,6 +63,8 @@ import tech.hookin.challengor.ui.utils.long
 import tech.hookin.challengor.ui.utils.plural
 import tech.hookin.challengor.ui.utils.rememberShareSheet
 import tech.hookin.challengor.ui.utils.short
+import tech.hookin.challengor.ui.theme.neumorphic
+import tech.hookin.challengor.ui.theme.OnSage
 
 private const val PREVIEW_DAYS = 7
 
@@ -228,30 +230,33 @@ private fun InfoLine(label: String, value: String) {
 @Composable
 private fun ProgressCard(checklist: DayChecklist) {
     val progress = checklist.progress
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-    ) {
-        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(20.dp),
-            ) {
-                ProgressRing(progress, size = 96.dp)
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    StatusBadge(progress.status)
-                    if (progress.goals.isEmpty()) {
-                        Text("${progress.done} of ${progress.total} tasks done", fontWeight = FontWeight.SemiBold)
+    OnSage {
+        Card(
+            modifier = Modifier.fillMaxWidth().neumorphic(CardDefaults.shape),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            elevation = CardDefaults.cardElevation(0.dp),
+        ) {
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
+                ) {
+                    ProgressRing(progress, size = 96.dp)
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        StatusBadge(progress.status)
+                        if (progress.goals.isEmpty()) {
+                            Text("${progress.done} of ${progress.total} tasks done", fontWeight = FontWeight.SemiBold)
+                        }
+                        Text("On track: ${progress.onTrackPercent}% of what was due so far", style = MaterialTheme.typography.bodySmall)
+                        Text(
+                            "Your window: ${checklist.participation.startDate.short()} – ${checklist.participation.endDate.long()}",
+                            style = MaterialTheme.typography.bodySmall,
+                        )
                     }
-                    Text("On track: ${progress.onTrackPercent}% of what was due so far", style = MaterialTheme.typography.bodySmall)
-                    Text(
-                        "Your window: ${checklist.participation.startDate.short()} – ${checklist.participation.endDate.long()}",
-                        style = MaterialTheme.typography.bodySmall,
-                    )
                 }
+                // Amount goals: short days can be made up later, so show the running total vs. plan.
+                progress.goals.forEach { GoalSummary(it) }
             }
-            // Amount goals: short days can be made up later, so show the running total vs. plan.
-            progress.goals.forEach { GoalSummary(it) }
         }
     }
 }
@@ -262,24 +267,27 @@ private fun DayChecklistCard(
     onToggle: (taskId: String, done: Boolean) -> Unit,
     onLogAmount: (taskId: String, amount: Int) -> Unit,
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                "Day ${checklist.dayNumber} · ${checklist.date.long()}",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-            )
-            if (!checklist.editable) {
+    OnSage {
+        Card(
+            modifier = Modifier.fillMaxWidth().neumorphic(CardDefaults.shape),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            elevation = CardDefaults.cardElevation(0.dp),
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = "You can tick tasks of today and earlier days while the challenge runs.",
-                    style = MaterialTheme.typography.bodySmall,
+                    "Day ${checklist.dayNumber} · ${checklist.date.long()}",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
                 )
+                if (!checklist.editable) {
+                    Text(
+                        text = "You can tick tasks of today and earlier days while the challenge runs.",
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
+                if (checklist.tasks.isEmpty()) Text("Rest day – nothing to do.", modifier = Modifier.padding(top = 8.dp))
+                DayTaskList(checklist.tasks, checklist.editable, onToggle, onLogAmount)
             }
-            if (checklist.tasks.isEmpty()) Text("Rest day – nothing to do.", modifier = Modifier.padding(top = 8.dp))
-            DayTaskList(checklist.tasks, checklist.editable, onToggle, onLogAmount)
         }
     }
 }
@@ -288,25 +296,28 @@ private fun DayChecklistCard(
 @Composable
 private fun TaskPreview(state: ChallengeDetailUiState) {
     val challenge = state.challenge ?: return
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-    ) {
-        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            when (challenge.scheduleMode) {
-                ScheduleMode.DAILY_REPEAT -> {
-                    Text("Every day", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                    state.tasksByDay[null].orEmpty().forEach { Text("•  " + it.previewLabel()) }
-                }
-
-                ScheduleMode.DAY_PLAN -> {
-                    val days = state.tasksByDay.keys.filterNotNull().sorted()
-                    days.take(PREVIEW_DAYS).forEach { day ->
-                        Text("Day ${day + 1}", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
-                        state.tasksByDay[day].orEmpty().forEach { Text("•  " + it.previewLabel()) }
+    OnSage {
+        Card(
+            modifier = Modifier.fillMaxWidth().neumorphic(CardDefaults.shape),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            elevation = CardDefaults.cardElevation(0.dp),
+        ) {
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                when (challenge.scheduleMode) {
+                    ScheduleMode.DAILY_REPEAT -> {
+                        Text("Every day", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                        state.tasksByDay[null].orEmpty().forEach { Text("•  " + it.previewLabel()) }
                     }
-                    if (days.size > PREVIEW_DAYS) {
-                        Text("+ ${plural(days.size - PREVIEW_DAYS, "more day")} with tasks", style = MaterialTheme.typography.labelMedium)
+
+                    ScheduleMode.DAY_PLAN -> {
+                        val days = state.tasksByDay.keys.filterNotNull().sorted()
+                        days.take(PREVIEW_DAYS).forEach { day ->
+                            Text("Day ${day + 1}", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+                            state.tasksByDay[day].orEmpty().forEach { Text("•  " + it.previewLabel()) }
+                        }
+                        if (days.size > PREVIEW_DAYS) {
+                            Text("+ ${plural(days.size - PREVIEW_DAYS, "more day")} with tasks", style = MaterialTheme.typography.labelMedium)
+                        }
                     }
                 }
             }

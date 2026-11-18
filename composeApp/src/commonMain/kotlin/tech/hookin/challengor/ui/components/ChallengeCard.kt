@@ -21,6 +21,8 @@ import tech.hookin.challengor.domain.ChallengeProgress
 import tech.hookin.challengor.model.Challenge
 import tech.hookin.challengor.ui.utils.label
 import tech.hookin.challengor.ui.utils.plural
+import tech.hookin.challengor.ui.theme.neumorphic
+import tech.hookin.challengor.ui.theme.OnSage
 
 /** List entry for a challenge, optionally with the viewer's own progress. */
 @OptIn(ExperimentalLayoutApi::class)
@@ -33,47 +35,50 @@ fun ChallengeCard(
     modifier: Modifier = Modifier,
     progress: ChallengeProgress? = null,
 ) {
-    Card(
-        onClick = onClick,
-        modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
+    OnSage {
+        Card(
+            onClick = onClick,
+            modifier = modifier.fillMaxWidth().neumorphic(CardDefaults.shape),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            elevation = CardDefaults.cardElevation(0.dp),
         ) {
-            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text(
-                    text = challenge.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                if (challenge.description.isNotBlank()) {
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text(
-                        text = challenge.description,
-                        style = MaterialTheme.typography.bodySmall,
-                        maxLines = 2,
+                        text = challenge.title,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
+                    if (challenge.description.isNotBlank()) {
+                        Text(
+                            text = challenge.description,
+                            style = MaterialTheme.typography.bodySmall,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                    Text(
+                        text = listOfNotNull(
+                            challenge.scheduleMode.label,
+                            plural(participantCount, "participant"),
+                            creatorName?.let { "by $it" },
+                        ).joinToString(" · "),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f),
+                    )
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        challenge.topics.forEach { TopicTag(it) }
+                        progress?.let { StatusBadge(it.status) }
+                    }
                 }
-                Text(
-                    text = listOfNotNull(
-                        challenge.scheduleMode.label,
-                        plural(participantCount, "participant"),
-                        creatorName?.let { "by $it" },
-                    ).joinToString(" · "),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f),
-                )
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    challenge.topics.forEach { TopicTag(it) }
-                    progress?.let { StatusBadge(it.status) }
-                }
+                progress?.let { ProgressRing(it) }
             }
-            progress?.let { ProgressRing(it) }
         }
     }
 }
